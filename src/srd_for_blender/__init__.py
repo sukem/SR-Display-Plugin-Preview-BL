@@ -82,6 +82,9 @@ class SRDPropertyIndex(enum.IntEnum):
     SpatialClippingSetting = enum.auto()
     ClipPlaneFront = enum.auto()
     ClipPlaneTop = enum.auto()
+    SelectedObjects = enum.auto()
+    VisibleObjects = enum.auto()
+    ActiveCollection = enum.auto()
 
 
 class SRDPropertyGroup(bpy.types.PropertyGroup):
@@ -143,6 +146,30 @@ class SRDPropertyGroup(bpy.types.PropertyGroup):
         default=True,
         update=lambda self, context: change_property_callback(
             self, context, SRDPropertyIndex.ClipPlaneTop
+        ),
+    )
+    SelectedObjects: bpy.props.BoolProperty(
+        name="",
+        description="",
+        default=False,
+        update=lambda self, context: change_property_callback(
+            self, context, SRDPropertyIndex.SelectedObjects
+        ),
+    )
+    VisibleObjects: bpy.props.BoolProperty(
+        name="",
+        description="",
+        default=False,
+        update=lambda self, context: change_property_callback(
+            self, context, SRDPropertyIndex.VisibleObjects
+        ),
+    )
+    ActiveCollection: bpy.props.BoolProperty(
+        name="",
+        description="",
+        default=False,
+        update=lambda self, context: change_property_callback(
+            self, context, SRDPropertyIndex.ActiveCollection
         ),
     )
 
@@ -303,6 +330,15 @@ class SRD_PT_Panel(bpy.types.Panel):
         row.prop(prop, "ClipPlaneTop", text="Top", translate=False)
         column.separator()
 
+        # Visibility setting
+        column.label(text="Visibility")
+        row = column.row(align=True)
+        row.label(text="Limit to:")
+        row.prop(prop, "SelectedObjects", text="Selected Objects", translate=False)
+        row.prop(prop, "VisibleObjects", text="Visible Objects", translate=False)
+        row.prop(prop, "ActiveCollection", text="Active Collection", translate=False)
+        column.separator()
+
 
 classes = [
     SRD_PT_Panel,
@@ -338,6 +374,11 @@ def change_property_callback(self, context, index: SRDPropertyIndex):
         front = data.ClipPlaneFront
         top = data.ClipPlaneTop
         srdViewer.setClippingPlane(front, top)
+    if index == SRDPropertyIndex.SelectedObjects or index == SRDPropertyIndex.VisibleObjects or index == SRDPropertyIndex.ActiveCollection:
+        selectedObjects = data.SelectedObjects
+        visibleObjects = data.VisibleObjects
+        activeCollection = data.ActiveCollection
+        srdViewer.setVisibility(selectedObjects, visibleObjects, activeCollection)
 
 
 def init_props():

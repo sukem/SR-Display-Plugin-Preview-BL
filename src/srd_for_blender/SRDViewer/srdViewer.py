@@ -850,6 +850,15 @@ class srdViewer:
             else:
                 srdViewer.m_sourceOperator.report({"INFO"}, log)
 
+    m_selectedObjects: bool = False
+    m_visibleObjects: bool = False
+    m_activeCollection: bool = False
+
+    def setVisibility(selectedObjects, visibleObjects, activeCollection) -> None:
+        srdViewer.m_selectedObjects = selectedObjects
+        srdViewer.m_visibleObjects = visibleObjects
+        srdViewer.m_activeCollection = activeCollection
+
     def loadScene() -> None:
         srdViewer.setFbxPath()
         srdViewer.setFbxPresetPath()
@@ -861,9 +870,9 @@ class srdViewer:
                 filepath=fbxFullPathName,
                 check_existing=False,
                 filter_glob="*.fbx",
-                use_selection=False,
-                use_visible=False,
-                use_active_collection=False,
+                use_selection=srdViewer.m_selectedObjects,
+                use_visible=srdViewer.m_visibleObjects,
+                use_active_collection=srdViewer.m_activeCollection,
                 global_scale=1.0,
                 apply_unit_scale=True,
                 apply_scale_options="FBX_SCALE_ALL",
